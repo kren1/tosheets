@@ -76,6 +76,15 @@ def appendToSheet(values, spreadsheetId, rangeName):
         exit(1)
     exit(0)
 
+def tryToConvert(x):
+  try:
+     return int(x)
+  except ValueError:
+    try:
+      return float(x)
+    except ValueError:
+      return x
+
 if __name__ == '__main__':
     arguments = docopt(doc, version='tosheets 0.1')
     spreadsheetId = arguments['--spreadsheet']
@@ -93,7 +102,7 @@ if __name__ == '__main__':
     cell = arguments['-c'] 
     values = []
     for line in sys.stdin:
-        values.append(line.split());
+        values.append(list(map(tryToConvert, line.split())));
 
     appendToSheet(values, spreadsheetId, sheet + "!" + cell)
 
