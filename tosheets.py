@@ -7,13 +7,15 @@ Usage:
   tosheets --version
 
 Options:
-  -h --help       Prints help.
-  --version       Show version.
-  -c CELL         Start appending to CELL.
-  -s SHEET        Use sheet name SHEET, otherwise tries to use TOSHEETS_SHEET (default: first visible sheet). 
-  -d DELIMITER    Use DELIMITER to split each line (default: whitespace).
-  --spreadsheets  Send to the spreadsheet identified by spreadshetIdi 
-                  (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...) , if empty uses TOSHEETS_SPREADSHEET enviroment variable.
+  -h --help                     Prints help.
+  --version                     Show version.
+  -c CELL                       Start appending to CELL.
+  -s SHEET                      Use sheet name SHEET, otherwise tries to use 
+                                TOSHEETS_SHEET (default: first visible sheet). 
+  -d DELIMITER                  Use DELIMITER to split each line (default: whitespace).
+  --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId 
+                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...), 
+                                if empty uses TOSHEETS_SPREADSHEET enviroment variable.
 """
 import httplib2
 import os
@@ -109,7 +111,6 @@ if __name__ == '__main__':
     for line in sys.stdin:
         values.append(list(map(tryToConvert, line.split(seperator))));
 
-    print(values)
     appendToSheet(values, spreadsheetId, sheet + cell)
 
 
