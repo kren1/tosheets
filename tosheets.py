@@ -2,7 +2,7 @@
 doc = """tosheets, send stdin to your google sheets
 
 Usage:
-  tosheets -c <cell>  [-s <sheet>] [--spreadsheet=<spreadsheet>]
+  tosheets -c <cell>  [-s <sheet>] [--spreadsheet=<spreadsheet>] [-d <delimiter>]
   tosheets (-h | --help)
   tosheets --version
 
@@ -11,6 +11,7 @@ Options:
   --version       Show version.
   -c CELL         Start appending to CELL.
   -s SHEET        Use sheet name SHEET, otherwise uses TOSHEETS_SHEET.
+  -d DELIMITER    Use DELIMITER to split each line (default: whitespace).
   --spreadsheets  Send to this spreadsheet, if empty uses TOSHEETS_SPREADSHEET enviroment variable.
 """
 import httplib2
@@ -83,7 +84,7 @@ def tryToConvert(x):
     try:
       return float(x)
     except ValueError:
-      return x
+      return x.strip()
 
 if __name__ == '__main__':
     arguments = docopt(doc, version='tosheets 0.1')
@@ -100,10 +101,12 @@ if __name__ == '__main__':
             exit(1)
         sheet = os.environ['TOSHEETS_SHEET']
     cell = arguments['-c'] 
+    seperator = arguments['-d']
     values = []
     for line in sys.stdin:
-        values.append(list(map(tryToConvert, line.split())));
+        values.append(list(map(tryToConvert, line.split(seperator))));
 
+    print(values)
     appendToSheet(values, spreadsheetId, sheet + "!" + cell)
 
 
