@@ -2,6 +2,7 @@ A simple command line utility that sends your stdin to sheets.
 
 Available on pip by `pip install tosheets` (python3+ only)
 
+***NOTE:***  On first use, tosheets will open a browser window to authorize OAuth2 token.
 ## Using `tosheets`
 
 Given a google sheets spreadsheet `https://docs.google.com/spreadsheets/d/sample-spread-sheet-id-23sdf32543fs/edit#gid=0`
@@ -24,7 +25,6 @@ To the same location:
 echo '1 2\n3 4' | tosheets -c B4 --spreadsheet=1xF8oFP-QYgPV0AF0dzYSQe9PYj6BWlLanh_0Vc33JFc
 ```
 
-***NOTE:***  On first use, tosheets will open a browser window to authorize OAuth2 token.
 
 To sheets has a variety of other options listed:
 ```

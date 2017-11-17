@@ -30,7 +30,7 @@ from docopt import docopt
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-CLIENT_SECRET_FILE = '/homes/tk1713/.client_secret.json'
+CLIENT_SECRET_FILE = '.client_secret.json'
 APPLICATION_NAME = 'tosheets'
 
 
@@ -88,8 +88,7 @@ def tryToConvert(x):
       return float(x)
     except ValueError:
       return x.strip()
-
-if __name__ == '__main__':
+def main():
     arguments = docopt(doc, version='tosheets 0.1')
     spreadsheetId = arguments['--spreadsheet']
     if spreadsheetId is None:
@@ -113,4 +112,6 @@ if __name__ == '__main__':
 
     appendToSheet(values, spreadsheetId, sheet + cell)
 
+if __name__ == '__main__':
+    main()
 
