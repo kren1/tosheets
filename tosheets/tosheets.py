@@ -27,10 +27,12 @@ from oauth2client import tools
 from oauth2client.file import Storage
 from docopt import docopt
 
+import pkg_resources
+
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-CLIENT_SECRET_FILE = '.client_secret.json'
+CLIENT_SECRET_FILE = pkg_resources.resource_string(__name__, ".client_secret.json")
 APPLICATION_NAME = 'tosheets'
 
 
