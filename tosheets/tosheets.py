@@ -32,7 +32,7 @@ import pkg_resources
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-CLIENT_SECRET_FILE = pkg_resources.resource_string(__name__, ".client_secret.json")
+CLIENT_SECRET_FILE = pkg_resources.resource_filename(__name__, "client.json")
 APPLICATION_NAME = 'tosheets'
 
 
