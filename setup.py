@@ -25,7 +25,7 @@ setup(
     package_data={'': ['.client_secret.json'] },
     entry_points={
         'console_scripts': [
-            'tosheets = tosheets:main'
+            'tosheets = tosheets.tosheets:main'
         ],
     },
 
