@@ -1,2 +1,5 @@
 tosheets.egg-info
 __pycache__
+dist/
+*.swp
+
