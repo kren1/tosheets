@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='tosheets',
-    version='0.1.0',
+    version='0.1.1',
     author='Timotej Kapus',
     author_email='kren1@users.noreply.github.com',
     description=('Cmd utility that send stdin to google sheets'),
@@ -22,7 +22,7 @@ setup(
         'google-api-python-client'
     ],
     packages=find_packages(),
-    package_data={'tosheets': ['../.client_secret.json'] },
+    package_data={'tosheets': ['.client_secret.json'] },
     entry_points={
         'console_scripts': [
             'tosheets = tosheets.tosheets:main'
