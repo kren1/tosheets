@@ -22,7 +22,7 @@ setup(
         'google-api-python-client'
     ],
     packages=find_packages(),
-    package_data={'': ['.client_secret.json'] },
+    package_data={'tosheets': ['../.client_secret.json'] },
     entry_points={
         'console_scripts': [
             'tosheets = tosheets.tosheets:main'

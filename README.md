@@ -46,3 +46,9 @@ Options:
                                 (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...), 
                                 if empty uses TOSHEETS_SPREADSHEET enviroment variable.
 ```
+
+### Distribution
+```
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```
