@@ -1,2 +1,2 @@
 include LICENSE.txt
-include .client_secret.json
+include tosheets/.client_secret.json
