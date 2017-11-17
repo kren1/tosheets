@@ -10,9 +10,10 @@ Options:
   -h --help       Prints help.
   --version       Show version.
   -c CELL         Start appending to CELL.
-  -s SHEET        Use sheet name SHEET, otherwise uses TOSHEETS_SHEET.
+  -s SHEET        Use sheet name SHEET, otherwise tries to use TOSHEETS_SHEET (default: first visible sheet). 
   -d DELIMITER    Use DELIMITER to split each line (default: whitespace).
-  --spreadsheets  Send to this spreadsheet, if empty uses TOSHEETS_SPREADSHEET enviroment variable.
+  --spreadsheets  Send to the spreadsheet identified by spreadshetIdi 
+                  (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...) , if empty uses TOSHEETS_SPREADSHEET enviroment variable.
 """
 import httplib2
 import os
@@ -94,19 +95,21 @@ if __name__ == '__main__':
             print("TOSHEETS_SPREADSHEET is not set and --spreadsheet was not given")
             exit(1)
         spreadsheetId = os.environ['TOSHEETS_SPREADSHEET']
+    cell = arguments['-c'] 
     sheet = arguments['-s']
     if sheet is None:
         if not "TOSHEETS_SHEET" in os.environ:
-            print("TOSHEETS_SHEET is not set and -s was not given")
-            exit(1)
-        sheet = os.environ['TOSHEETS_SHEET']
-    cell = arguments['-c'] 
+          sheet = ""
+        else:
+          sheet = os.environ['TOSHEETS_SHEET'] + "!"
+    else:
+        sheet += "!"
     seperator = arguments['-d']
     values = []
     for line in sys.stdin:
         values.append(list(map(tryToConvert, line.split(seperator))));
 
     print(values)
-    appendToSheet(values, spreadsheetId, sheet + "!" + cell)
+    appendToSheet(values, spreadsheetId, sheet + cell)
 
 
