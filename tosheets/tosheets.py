@@ -126,10 +126,6 @@ def appendToSheet(values, spreadsheetId, rangeName):
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
 
-#    values = [[1,2,3],
-#              [4,5,6]]
-#    spreadsheetId = '1xF8oFP-QYgPV0AF0dzYSQe9PYj6BWlLanh_0Vc33JFc'
-#    rangeName = 'Sheet3!C5'
     try:
         result = service.spreadsheets().values().append(
             spreadsheetId=spreadsheetId, range=rangeName,

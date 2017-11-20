@@ -22,7 +22,7 @@ Alternatively to send a matrix
 To the same location:
 
 ```
-echo '1 2\n3 4' | tosheets -c B4 --spreadsheet=1xF8oFP-QYgPV0AF0dzYSQe9PYj6BWlLanh_0Vc33JFc
+echo -e '1 2\n3 4' | tosheets -c B4 --spreadsheet=1xF8oFP-QYgPV0AF0dzYSQe9PYj6BWlLanh_0Vc33JFc
 ```
 
 
