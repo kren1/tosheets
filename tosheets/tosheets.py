@@ -17,7 +17,8 @@ Options:
   --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId 
                                 (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...), 
                                 if empty uses TOSHEETS_SPREADSHEET enviroment variable.                                
-  --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the spreadsheetId so it can be piped/stored.
+  --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the
+                                spreadsheetId so it can be piped/stored.
 """
 import httplib2
 import os
@@ -73,7 +74,7 @@ def newSheet(name):
   service = discovery.build('sheets', 'v4', http=http,
                             discoveryServiceUrl=discoveryUrl)
 
-  sheet = body = {
+  sheet = {
     'properties'  : {    
       'autoRecalc': 'ON_CHANGE',
       'title': name,
@@ -93,8 +94,9 @@ def newSheet(name):
 
   try:
         result = service.spreadsheets().create(body=sheet).execute()
-        print(result['spreadsheetId'])
-        return result['spreadsheetId']
+        spreadsheetId = result['spreadsheetId']
+        print(spreadsheetId)
+        return spreadsheetId
   except Exception as e:
         print(e)
         exit(1)  

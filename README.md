@@ -31,20 +31,23 @@ To sheets has a variety of other options listed:
 tosheets, send stdin to your google sheets
 
 Usage:
-  tosheets -c <cell>  [-s <sheet>] [--spreadsheet=<spreadsheet>] [-d <delimiter>]
+  tosheets -c <cell> [-u] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>]
   tosheets (-h | --help)
   tosheets --version
 
 Options:
   -h --help                     Prints help.
   --version                     Show version.
+  -u                            Update CELL(s) instead of appending.
   -c CELL                       Start appending to CELL.
-  -s SHEET                      Use sheet name SHEET, otherwise tries to use 
-                                TOSHEETS_SHEET (default: first visible sheet). 
+  -s SHEET                      Use sheet name SHEET, otherwise tries to use
+                                TOSHEETS_SHEET (default: first visible sheet).
   -d DELIMITER                  Use DELIMITER to split each line (default: whitespace).
-  --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId 
-                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...), 
-                                if empty uses TOSHEETS_SPREADSHEET enviroment variable.
+  --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId
+                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...),
+                                if empty uses TOSHEETS_SPREADSHEET enviroment variable.                              
+  --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the
+                                spreadsheetId so it can be piped/stored.
 ```
 
 ### Distribution
