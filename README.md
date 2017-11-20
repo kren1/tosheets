@@ -4,17 +4,23 @@ Available on pip by `pip install tosheets` (python3+ only)
 
 ***NOTE:***  On first use, tosheets will open a browser window to authorize OAuth2 token.
 ## Using `tosheets`
+Pipe a local file to a new spreadsheet.
+```
+cat data.csv | tosheets
+```
 
-Given a google sheets spreadsheet `https://docs.google.com/spreadsheets/d/sample-spread-sheet-id-23sdf32543fs/edit#gid=0`
+Pipe a local file to an existing spreadsheet:
+(Given a URL like `https://docs.google.com/spreadsheets/d/sample-spread-sheet-id-23sdf32543fs/edit#gid=0`)
+```
+cat data.csv | local --spreadsheet sample-spread-sheet-id-23sdf32543fs
+```
 
-You can send stdin to the spreadsheet. For example to send sequence from 1 to 10 to a column starting at B4:
-
+Send sequence from 1 to 10 to a column starting at B4:
 ```
 seq 1 10 | tosheets -c B4 --spreadsheet sample-spread-sheet-id-23sdf32543fs
 ```
 
-Alternatively to send a matrix 
-
+Send a matrix:
 ```
 1 2
 3 4
@@ -22,7 +28,7 @@ Alternatively to send a matrix
 To the same location:
 
 ```
-echo -e '1 2\n3 4' | tosheets -c B4 --spreadsheet=1xF8oFP-QYgPV0AF0dzYSQe9PYj6BWlLanh_0Vc33JFc
+echo -e '1 2\n3 4' | tosheets -c B4 --spreadsheet sample-spread-sheet-id-23sdf32543fs
 ```
 
 
@@ -44,8 +50,9 @@ Options:
                                 TOSHEETS_SHEET (default: first visible sheet).
   -d DELIMITER                  Use DELIMITER to split each line (default: whitespace).
   --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId
-                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...),
-                                if empty uses TOSHEETS_SPREADSHEET enviroment variable.                              
+                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...).
+                                Falls back to TOSHEETS_SPREADSHEET enviroment variable,
+                                or creates a new sheet if both are empty.
   --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the
                                 spreadsheetId so it can be piped/stored.
 ```
