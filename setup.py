@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='tosheets',
-    version='0.1.8',
+    version='0.2.0',
     author='Timotej Kapus',
     author_email='kren1@users.noreply.github.com',
     description=('Cmd utility that send stdin to google sheets'),
