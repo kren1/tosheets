@@ -12,12 +12,12 @@ cat data.csv | tosheets
 Pipe a local file to an existing spreadsheet:
 (Given a URL like `https://docs.google.com/spreadsheets/d/sample-spread-sheet-id-23sdf32543fs/edit#gid=0`)
 ```
-cat data.csv | local --spreadsheet sample-spread-sheet-id-23sdf32543fs
+cat data.csv | tosheets -c B4 --spreadsheet=sample-spread-sheet-id-23sdf32543fs
 ```
 
 Send sequence from 1 to 10 to a column starting at B4:
 ```
-seq 1 10 | tosheets -c B4 --spreadsheet sample-spread-sheet-id-23sdf32543fs
+seq 1 10 | tosheets -c B4 --spreadsheet=sample-spread-sheet-id-23sdf32543fs
 ```
 
 Send a matrix:
@@ -28,7 +28,7 @@ Send a matrix:
 To the same location:
 
 ```
-echo -e '1 2\n3 4' | tosheets -c B4 --spreadsheet sample-spread-sheet-id-23sdf32543fs
+echo -e '1 2\n3 4' | tosheets -c B4 --spreadsheet=sample-spread-sheet-id-23sdf32543fs
 ```
 
 
