@@ -22,6 +22,7 @@ Options:
 """
 import httplib2
 import os
+import re
 import sys
 
 from apiclient import discovery
@@ -146,13 +147,24 @@ def tryToConvert(x):
     except ValueError:
       return x.strip()
 
+# If the given ID looks like a full URL instead of an ID, extract the ID
+def canonicalizeSpreadsheetId(spreadsheetId):
+    match = re.match('^https?://docs.google.com/spreadsheets/d/([^/]+)', spreadsheetId)
+    if match:
+        return match.groups()[0]
+
+    return spreadsheetId
+
 def main():
     arguments = docopt(doc, version='tosheets 0.1')
     
     spreadsheetId = arguments['--spreadsheet']
     newSheetName = arguments['--new-sheet']
 
-    if spreadsheetId is None and newSheetName is None:                  
+    if spreadsheetId:
+        spreadsheetId = canonicalizeSpreadsheetId(spreadsheetId)
+
+    if spreadsheetId is None and newSheetName is None:
         if not "TOSHEETS_SPREADSHEET" in os.environ:
             print("TOSHEETS_SPREADSHEET is not set and --spreadsheet was not given")
             exit(1)
