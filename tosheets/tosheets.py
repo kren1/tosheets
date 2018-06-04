@@ -2,7 +2,7 @@
 doc = """tosheets, send stdin to your google sheets
 
 Usage:
-  tosheets -c <cell> [-u] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>]
+  tosheets -c <cell> [-u] [-k] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>]
   tosheets (-h | --help)
   tosheets --version
 
@@ -10,6 +10,7 @@ Options:
   -h --help                     Prints help.
   --version                     Show version.
   -u                            Update CELL(s) instead of appending.
+  -k                            Keep fields as they are (do not try to convert int or float).
   -c CELL                       Start appending to CELL.
   -s SHEET                      Use sheet name SHEET, otherwise tries to use 
                                 TOSHEETS_SHEET (default: first visible sheet). 
@@ -147,6 +148,9 @@ def tryToConvert(x):
     except ValueError:
       return x.strip()
 
+def dummyConvert(x):
+    return x.strip()
+
 # If the given ID looks like a full URL instead of an ID, extract the ID
 def canonicalizeSpreadsheetId(spreadsheetId):
     match = re.match('^https?://docs.google.com/spreadsheets/d/([^/]+)', spreadsheetId)
@@ -185,8 +189,14 @@ def main():
         sheet += "!"
     seperator = arguments['-d']
     values = []
-    for line in sys.stdin:
-        values.append(list(map(tryToConvert, line.split(seperator))));
+
+    keep = arguments['-k']
+    if keep is True:
+        for line in sys.stdin:
+            values.append(list(map(dummyConvert, line.split(seperator))));
+    else:
+        for line in sys.stdin:
+            values.append(list(map(tryToConvert, line.split(seperator))));
 
     update = arguments['-u']
     
