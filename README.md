@@ -6,7 +6,7 @@ Available on pip by `pip install tosheets` (python3+ only)
 ## Using `tosheets`
 Pipe a local file to a new spreadsheet.
 ```
-cat data.csv | tosheets
+cat data.csv | tosheets -c A1 --new-sheet="tosheetsSheet"
 ```
 
 Pipe a local file to an existing spreadsheet:
