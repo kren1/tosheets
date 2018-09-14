@@ -19,6 +19,7 @@ setup(
     ],
     install_requires=[
         'docopt',
+        'oauth2client',
         'google-api-python-client'
     ],
     packages=find_packages(),
