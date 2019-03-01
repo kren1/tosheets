@@ -2,7 +2,7 @@
 doc = """tosheets, send stdin to your google sheets
 
 Usage:
-  tosheets -c <cell> [-u] [-k] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>]
+  tosheets -c <cell> [-u] [-k] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>] [-q <quote char>]
   tosheets (-h | --help)
   tosheets --version
 
@@ -12,12 +12,15 @@ Options:
   -u                            Update CELL(s) instead of appending.
   -k                            Keep fields as they are (do not try to convert int or float).
   -c CELL                       Start appending to CELL.
-  -s SHEET                      Use sheet name SHEET, otherwise tries to use 
-                                TOSHEETS_SHEET (default: first visible sheet). 
+  -s SHEET                      Use sheet name SHEET, otherwise tries to use
+                                TOSHEETS_SHEET (default: first visible sheet).
   -d DELIMITER                  Use DELIMITER to split each line (default: whitespace).
-  --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId 
-                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...), 
-                                if empty uses TOSHEETS_SPREADSHEET enviroment variable.                                
+  -q QUOTE_CHAR                 A one-character string used to quote fields containing special characters,
+                                such as the delimiter or quotechar, or which contain new-line characters.
+                                (default: '"').
+  --spreadsheet=<spreadsheet>   Send to the spreadsheet identified by spreadshetId
+                                (ie. docs.google.com/spreadsheets/d/<spreadsheetId>/...),
+                                if empty uses TOSHEETS_SPREADSHEET enviroment variable.
   --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the
                                 spreadsheetId so it can be piped/stored.
 """
@@ -25,6 +28,7 @@ import httplib2
 import os
 import re
 import sys
+import csv
 
 from apiclient import discovery
 from oauth2client import client
@@ -77,7 +81,7 @@ def newSheet(name):
                             discoveryServiceUrl=discoveryUrl)
 
   sheet = {
-    'properties'  : {    
+    'properties'  : {
       'autoRecalc': 'ON_CHANGE',
       'title': name,
       'locale': 'en_US',
@@ -101,7 +105,7 @@ def newSheet(name):
         return spreadsheetId
   except Exception as e:
         print(e)
-        exit(1)  
+        exit(1)
 
 
 # appendToSheet that updates instead of appending, should retain virtually identical semantics
@@ -161,7 +165,7 @@ def canonicalizeSpreadsheetId(spreadsheetId):
 
 def main():
     arguments = docopt(doc, version='tosheets 0.1')
-    
+
     spreadsheetId = arguments['--spreadsheet']
     newSheetName = arguments['--new-sheet']
 
@@ -177,8 +181,8 @@ def main():
     if newSheetName is not None:
       spreadsheetId = newSheet(newSheetName)
 
-    cell = arguments['-c'] 
-    sheet = arguments['-s']    
+    cell = arguments['-c']
+    sheet = arguments['-s']
 
     if sheet is None:
         if not "TOSHEETS_SHEET" in os.environ:
@@ -187,19 +191,17 @@ def main():
           sheet = os.environ['TOSHEETS_SHEET'] + "!"
     else:
         sheet += "!"
-    seperator = arguments['-d']
-    values = []
 
+    separator = arguments['-d'] or ' '
+    quote = arguments['-q'] or '"'
     keep = arguments['-k']
-    if keep is True:
-        for line in sys.stdin:
-            values.append(list(map(dummyConvert, line.split(seperator))));
-    else:
-        for line in sys.stdin:
-            values.append(list(map(tryToConvert, line.split(seperator))));
+    reader = csv.reader(sys.stdin, delimiter=separator, quotechar=quote)
+
+    values = []
+    for line in reader:
+        values.append(list(map(dummyConvert if keep else tryToConvert, line)))
 
     update = arguments['-u']
-    
     if update is False:
       appendToSheet(values, spreadsheetId, sheet + cell)
     else:
