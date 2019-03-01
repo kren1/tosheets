@@ -164,7 +164,8 @@ def canonicalizeSpreadsheetId(spreadsheetId):
     return spreadsheetId
 
 def main():
-    arguments = docopt(doc, version='tosheets 0.1')
+    version = pkg_resources.require('tosheets')[0].version
+    arguments = docopt(doc, version='tosheets ' + str(version))
 
     spreadsheetId = arguments['--spreadsheet']
     newSheetName = arguments['--new-sheet']
