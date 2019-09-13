@@ -44,6 +44,7 @@ Usage:
 Options:
   -h --help                     Prints help.
   --version                     Show version.
+  -i CSV                        Read this CSV instead of stdin
   -u                            Update CELL(s) instead of appending.
   -k                            Keep fields as they are (do not try to convert int or float).
   -c CELL                       Start appending to CELL.
@@ -58,6 +59,7 @@ Options:
                                 if empty uses TOSHEETS_SPREADSHEET enviroment variable.
   --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the
                                 spreadsheetId so it can be piped/stored.
+  --open                        Open a browser with the newly created sheet
 ```
 
 ### Distribution

@@ -3,11 +3,12 @@ from setuptools import find_packages
 
 setup(
     name='tosheets',
-    version='0.4.1',
+    version='0.4.2',
     author='Timotej Kapus',
     author_email='kren1@users.noreply.github.com',
     description=('Cmd utility that send stdin to google sheets'),
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),
+    long_description_content_type='text/markdown',
     license='MIT',
     keywords='utility sheets command line',
     url='https://github.com/kren1/tosheets',
