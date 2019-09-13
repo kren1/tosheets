@@ -2,13 +2,14 @@
 doc = """tosheets, send stdin to your google sheets
 
 Usage:
-  tosheets -c <cell> [-u] [-k] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>] [-q <quote char>]
+  tosheets -c <cell> [-u] [-k] [-s <sheet>] [--spreadsheet=<spreadsheet>] [--new-sheet=<name>] [-d <delimiter>] [-q <quote char>] [--open] [-i <csv>]
   tosheets (-h | --help)
   tosheets --version
 
 Options:
   -h --help                     Prints help.
   --version                     Show version.
+  -i CSV                        Read this CSV instead of stdin
   -u                            Update CELL(s) instead of appending.
   -k                            Keep fields as they are (do not try to convert int or float).
   -c CELL                       Start appending to CELL.
@@ -23,7 +24,9 @@ Options:
                                 if empty uses TOSHEETS_SPREADSHEET enviroment variable.
   --new-sheet=<name>            Create a new spreadsheet with the chosen name. Prints the
                                 spreadsheetId so it can be piped/stored.
+  --open                        Open a browser with the newly created sheet
 """
+import webbrowser
 import httplib2
 import os
 import re
@@ -43,6 +46,7 @@ import pkg_resources
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 CLIENT_SECRET_FILE = pkg_resources.resource_filename(__name__, "client.json")
 APPLICATION_NAME = 'tosheets'
+SHEET_URL_FMT = 'https://docs.google.com/spreadsheets/d/%s/edit#gid=0'
 
 
 def get_credentials():
@@ -73,37 +77,34 @@ def get_credentials():
 
 # creates a new sheet with the chosen Name
 def newSheet(name):
-  credentials = get_credentials()
-  http = credentials.authorize(httplib2.Http())
-  discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
-                  'version=v4')
-  service = discovery.build('sheets', 'v4', http=http,
-                            discoveryServiceUrl=discoveryUrl)
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                    'version=v4')
+    service = discovery.build('sheets', 'v4', http=http,
+                              discoveryServiceUrl=discoveryUrl)
 
-  sheet = {
-    'properties'  : {
-      'autoRecalc': 'ON_CHANGE',
-      'title': name,
-      'locale': 'en_US',
-      'timeZone': 'America/New_York'
-    },
-    'sheets'    : [{
-      'properties'  : {
-        'gridProperties': {'columnCount':26,'rowCount':200},
-        'index': 0,
-        'sheetId': 0,
-        'sheetType': 'GRID',
-        'title': 'tosheets'
-      }
-    }]
-  }
+    sheet = dict(properties={
+        'autoRecalc': 'ON_CHANGE',
+        'title': name,
+        'locale': 'en_US',
+        'timeZone': 'America/New_York'
+    }, sheets=[{
+        'properties': {
+            'gridProperties': {'columnCount': 26, 'rowCount': 200},
+            'index': 0,
+            'sheetId': 0,
+            'sheetType': 'GRID',
+            'title': 'tosheets'
+        }
+    }])
 
-  try:
+    try:
         result = service.spreadsheets().create(body=sheet).execute()
         spreadsheetId = result['spreadsheetId']
         print(spreadsheetId)
         return spreadsheetId
-  except Exception as e:
+    except Exception as e:
         print(e)
         exit(1)
 
@@ -124,7 +125,7 @@ def updateSheet(values, spreadsheetId, rangeName):
     except Exception as e:
         print(e)
         exit(1)
-    exit(0)
+
 
 def appendToSheet(values, spreadsheetId, rangeName):
     credentials = get_credentials()
@@ -136,24 +137,28 @@ def appendToSheet(values, spreadsheetId, rangeName):
 
     try:
         result = service.spreadsheets().values().append(
-            spreadsheetId=spreadsheetId, range=rangeName,
-            valueInputOption='RAW', body = {'values': values}).execute()
+            spreadsheetId=spreadsheetId,
+            range=rangeName,
+            valueInputOption='RAW',
+            body = {'values': values}).execute()
     except Exception as e:
         print(e)
         exit(1)
-    exit(0)
+
 
 def tryToConvert(x):
-  try:
-     return int(x)
-  except ValueError:
     try:
-      return float(x)
+       return int(x)
     except ValueError:
-      return x.strip()
+      try:
+          return float(x)
+      except ValueError:
+          return x.strip()
+
 
 def dummyConvert(x):
     return x.strip()
+
 
 # If the given ID looks like a full URL instead of an ID, extract the ID
 def canonicalizeSpreadsheetId(spreadsheetId):
@@ -162,6 +167,7 @@ def canonicalizeSpreadsheetId(spreadsheetId):
         return match.groups()[0]
 
     return spreadsheetId
+
 
 def main():
     version = pkg_resources.require('tosheets')[0].version
@@ -180,23 +186,30 @@ def main():
         spreadsheetId = os.environ['TOSHEETS_SPREADSHEET']
 
     if newSheetName is not None:
-      spreadsheetId = newSheet(newSheetName)
+        spreadsheetId = newSheet(newSheetName)
 
     cell = arguments['-c']
     sheet = arguments['-s']
 
     if sheet is None:
         if not "TOSHEETS_SHEET" in os.environ:
-          sheet = ""
+            sheet = ""
         else:
-          sheet = os.environ['TOSHEETS_SHEET'] + "!"
+            sheet = os.environ['TOSHEETS_SHEET'] + "!"
     else:
         sheet += "!"
 
     separator = arguments['-d'] or ' '
     quote = arguments['-q'] or '"'
     keep = arguments['-k']
-    reader = csv.reader(sys.stdin, delimiter=separator, quotechar=quote)
+
+    input_file = arguments['-i'] or None
+    input_fd = sys.stdin
+
+    if input_file is not None:
+        input_fd = open(input_file)
+
+    reader = csv.reader(input_fd, delimiter=separator, quotechar=quote)
 
     values = []
     for line in reader:
@@ -204,10 +217,14 @@ def main():
 
     update = arguments['-u']
     if update is False:
-      appendToSheet(values, spreadsheetId, sheet + cell)
+        appendToSheet(values, spreadsheetId, sheet + cell)
     else:
-      updateSheet(values, spreadsheetId, sheet + cell)
+        updateSheet(values, spreadsheetId, sheet + cell)
+
+    should_open = arguments['--open'] or False
+    if should_open:
+        webbrowser.open(SHEET_URL_FMT % spreadsheetId)
+
 
 if __name__ == '__main__':
     main()
-
